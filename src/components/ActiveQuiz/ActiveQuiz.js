@@ -2,24 +2,28 @@ import React from "react"
 import classes from "./ActiveQuiz.module.css"
 import AnswerList from "./AnswersList/AnswersList"
 
-const ActiveQuiz = props => (
-  <div className={classes.ActiveQuiz}>
-    <p className={classes.Questions}>
+const ActiveQuiz = props => {
+  //console.log('ActivQuiz', props)
+  return(
+    <div className={classes.ActiveQuiz}>
+      <p className={classes.Questions}>
       <span>
         <strong>2.</strong>&nbsp;
-        Как дела?
+        {props.question}
       </span>
-      <small>4 из 12</small>
-    </p>
+        <small>4 из 12</small>
+      </p>
 
-    <ul>
-      <AnswerList
-        answers={props.answers}
-      />
-    </ul>
+      <ul>
+        <AnswerList
+          answers={props.answers}
+          onAnswerClick={props.onAnswerClick}
+        />
+      </ul>
 
-  </div>
-)
+    </div>
+  )
+}
 
 
 export default ActiveQuiz
