@@ -1,9 +1,11 @@
 import React, {Component} from "react"
 import classes from "./Quiz.module.css"
 import ActiveQuiz from "../../components/ActiveQuiz/ActiveQuiz"
+import FinishedQuiz from "../../components/FinishedQuiz/FinishedQuiz"
 
 class Quiz extends Component {
   state = {
+    isFinished: true,
     activeQuestions: 0,
     answerState: null,
     quiz: [
@@ -53,22 +55,21 @@ class Quiz extends Component {
 
       const timeout = window.setTimeout(() => {
         if (this.isQuizFinished()) {
-          console.log('finished')
+          this.setState({
+            isFinished: true
+          })
         } else {
           this.setState({
             activeQuestions: this.state.activeQuestions + 1,
             answerState: null
           })
         }
-
         window.clearTimeout(timeout)
       }, 1000)
     } else {
-
       this.setState({
         answerState: { [answerId]: 'error' }
       })
-
     }
   }
 
@@ -83,14 +84,22 @@ class Quiz extends Component {
 
         <div className={classes.QuizWrapper}>
           <h1>Ответьте на все вопросы</h1>
-          <ActiveQuiz
-            answers={this.state.quiz[this.state.activeQuestions].answers}
-            question={this.state.quiz[this.state.activeQuestions].questions}
-            onAnswerClick={this.onAnswerClickHandler}
-            quizLenght={this.state.quiz.length}
-            answerNumber={this.state.activeQuestions + 1}
-            state={this.state.answerState}
-          />
+
+          {
+            this.state.isFinished
+              ? <FinishedQuiz
+                  //repeat={this.setState({isFinished: true})}
+                />
+              : <ActiveQuiz
+                  answers={this.state.quiz[this.state.activeQuestions].answers}
+                  question={this.state.quiz[this.state.activeQuestions].questions}
+                  onAnswerClick={this.onAnswerClickHandler}
+                  quizLenght={this.state.quiz.length}
+                  answerNumber={this.state.activeQuestions + 1}
+                  state={this.state.answerState}
+                />
+          }
+
         </div>
 
       </div>

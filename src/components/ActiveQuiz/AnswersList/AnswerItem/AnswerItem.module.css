@@ -4,7 +4,6 @@
     padding: 5px 10px;
     margin-bottom: 5px;
     cursor: pointer;
-
 }
 
 .AnswerItem:hover {
@@ -14,7 +13,6 @@
 
 .AnswerItem.success {
     background: rgba(161, 240, 69, .7);
-
 }
 
 .AnswerItem.error {
