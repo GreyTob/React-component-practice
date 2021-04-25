@@ -2,8 +2,6 @@ import React from "react"
 import classes from "./AnswerItem.module.css"
 
 const AnswerItem = props => {
-  //console.log(props)
-
   const cls = [classes.AnswerItem]
 
   if (props.state) {
@@ -15,7 +13,7 @@ const AnswerItem = props => {
       className={cls.join(' ')}
       onClick={() => props.onAnswerClick(props.answer.id)}
     >
-      {props.answer.text}
+      { props.answer.text }
     </li>
   )
 }

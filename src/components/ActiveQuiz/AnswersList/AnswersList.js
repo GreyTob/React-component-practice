@@ -3,8 +3,7 @@ import classes from "./AnswersList.module.css"
 import AnswerItem from "./AnswerItem/AnswerItem"
 
 const AnswersList = props => {
-  //console.log('list', props);
-  return(
+  return (
     <ul className={classes.AnswersList}>
       { props.answers.map((answer, index) => {
         return (
@@ -12,13 +11,12 @@ const AnswersList = props => {
             key={index}
             answer={answer}
             onAnswerClick={props.onAnswerClick}
-            state={ props.state ? props.state[answer.id] : null}
+            state={props.state ? props.state[answer.id] : null}
           />
         )
       }) }
     </ul>
   )
 }
-
 
 export default AnswersList
