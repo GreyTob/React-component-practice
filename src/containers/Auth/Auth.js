@@ -12,6 +12,7 @@ import is from 'is_js' //библиотека micro check: npm i is_js / yarn ad
 
 export default class Auth extends Component {
   state = {
+    isFormValid: false,
     formControls: {
       email: {
         type: 'email',
@@ -71,7 +72,7 @@ export default class Auth extends Component {
     return isValid
   }
 
-  onChanheHandler = (Event, controlName) => {
+  onChangeHandler = (Event, controlName) => {
     console.log(`${controlName}:`, Event.target.value)
 
     const formControls = { ...this.state.formControls } //оператор spread развернет (сделае копию) this.state.formControls
@@ -86,8 +87,15 @@ export default class Auth extends Component {
     //вношу изменения в переменную formControls
     formControls[controlName] = control
 
+    //проверка валидации всей формы
+    let isFormValid = true
+    Object.keys(formControls).forEach((name) => {
+      isFormValid = formControls[name].valid && isFormValid
+    })
+
     this.setState({
       formControls, //the same: formControls: formControls
+      isFormValid,
     })
   }
 
@@ -104,7 +112,7 @@ export default class Auth extends Component {
           label={control.label}
           errorMessage={control.errorMessage}
           shouldValidate={!!control.validation} //привожу к булевому типу - !!
-          onChange={(Event) => this.onChanheHandler(Event, controlName)}
+          onChange={(Event) => this.onChangeHandler(Event, controlName)}
         />
       )
     })
@@ -123,10 +131,18 @@ export default class Auth extends Component {
           >
             {this.renderInputs()}
 
-            <Button type="success" onClick={this.loginHandler}>
+            <Button
+              type="success"
+              onClick={this.loginHandler}
+              disabled={!this.state.isFormValid} // если форма невалидная, то disabled = true
+            >
               Войти
             </Button>
-            <Button type="primary" onClick={this.registerHandler}>
+            <Button
+              type="primary"
+              onClick={this.registerHandler}
+              disabled={!this.state.isFormValid}
+            >
               Зарегистрироваться
             </Button>
           </form>
