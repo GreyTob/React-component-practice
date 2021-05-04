@@ -53,10 +53,50 @@ export default class QuizCreator extends Component {
 
   addQuestionHandler = (Event) => {
     Event.preventDefault()
+
+    //сделаем копию массива quiz. метод concat() без параметров вернет копию массива
+    const quiz = this.state.quiz.concat() // это защищает от мутаций
+    const index = quiz.length + 1 //будем использовать в качестве id
+
+    //деструктуризация для сокращения окда
+    const {
+      question,
+      option1,
+      option2,
+      option3,
+      option4,
+    } = this.state.formControls
+
+    // формируем объект каждого из вопросов
+    const questonItem = {
+      question: question.value, //за счет деструктуризации не прописывается this.state.formControls.
+      id: index,
+      rightAnswerId: this.state.rightAnswerId,
+      answers: [
+        { text: option1.value, id: option1.id }, //за счет деструктуризации не прописывается this.state.formControls.
+        { text: option2.value, id: option2.id },
+        { text: option3.value, id: option3.id },
+        { text: option4.value, id: option4.id },
+      ],
+    }
+
+    //сформированный объект добавляем в массив quiz
+    quiz.push(questonItem)
+
+    //меняем state и обнуляем состояние страницы
+    this.setState({
+      quiz,
+      isFormValid: false,
+      rightAnswerId: 1,
+      formControls: createFormControl(),
+    })
   }
 
   createQuizHandler = (Event) => {
     Event.preventDefault()
+
+    console.log(this.state.quiz)
+    //TODO: server
   }
 
   changeHandler = (value, controlName) => {
@@ -139,7 +179,7 @@ export default class QuizCreator extends Component {
             <Button
               type="success"
               onClick={this.createQuizHandler}
-              disabled={this.state.quiz.length === 0} //если нет вопросов, то кнопка неактивна
+              disabled={this.state.quiz.length === 0} //если нет вопросов, то тест не создатся
             >
               Создать тест
             </Button>
