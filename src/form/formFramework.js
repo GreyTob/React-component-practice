@@ -9,3 +9,32 @@ export function createControl(config, validation) {
     value: '',
   }
 }
+
+//валидация input (пример в Auth.js)
+export function validate(value, validation = null) {
+  if (!validation) {
+    return true
+  }
+
+  let isValid = true
+
+  if (validation.required) {
+    isValid = value.trim() && isValid
+  }
+
+  return isValid
+}
+
+//общая вадилация формы создания вопросов
+export function validateForm(formControls) {
+  let isFormValid = true
+
+  for (let control in formControls) {
+    //свойство hasOwnProperty чтобы не заходить в прототир объекта formControls
+    if (formControls.hasOwnProperty(control)) {
+      isFormValid = formControls[control].valid && isFormValid
+    }
+  }
+
+  return isFormValid
+}

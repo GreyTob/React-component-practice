@@ -73,10 +73,10 @@ export default class Auth extends Component {
   }
 
   onChangeHandler = (Event, controlName) => {
-    console.log(`${controlName}:`, Event.target.value)
+    //console.log(`${controlName}:`, Event.target.value)
 
     const formControls = { ...this.state.formControls } //оператор spread развернет (сделае копию) this.state.formControls
-    const control = { ...formControls[controlName] } //копия объекта email/password из стейта
+    const control = { ...formControls[controlName] } //текущий объект email/password из стейта
 
     //в переменной контрол будем переопределять значения, зная что state не мутирует
     control.value = Event.target.value

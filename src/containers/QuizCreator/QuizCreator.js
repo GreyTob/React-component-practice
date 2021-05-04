@@ -3,7 +3,7 @@ import classes from './QuizCreator.module.css'
 import Button from '../../components/UI/Button/Button'
 import Select from '../../components/UI/Select/Select'
 import Input from '../../components/UI/Input/Input'
-import { createControl } from '../../form/formFramework'
+import { createControl, validate, validateForm } from '../../form/formFramework'
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
 
 //генерация вариантов ответа
@@ -42,6 +42,7 @@ function createFormControl() {
 export default class QuizCreator extends Component {
   state = {
     quiz: [], //для хранения созданных вопросов
+    isFormValid: false,
     rightAnswerId: 1, //значение по умолчанию
     formControls: createFormControl(),
   }
@@ -50,16 +51,35 @@ export default class QuizCreator extends Component {
     Event.preventDefault()
   }
 
-  addQuestionHandler = () => {}
+  addQuestionHandler = (Event) => {
+    Event.preventDefault()
+  }
 
-  createQuizHandler = () => {}
+  createQuizHandler = (Event) => {
+    Event.preventDefault()
+  }
 
-  changeHandker = (value, controlName) => {}
+  changeHandler = (value, controlName) => {
+    //пример в Auth.js
+    const formControls = { ...this.state.formControls } //оператор spread развернет (сделае копию) this.state.formControls
+    const control = { ...formControls[controlName] } //текущий объект quistion и option 1,2,3,4 из стейта
+
+    control.touched = true
+    control.value = value
+    control.valid = validate(control.value, control.validation)
+
+    formControls[controlName] = control
+
+    this.setState({
+      formControls,
+      isFormValid: validateForm(formControls),
+    })
+  }
 
   renderControl() {
     //генерация input
     return Object.keys(this.state.formControls).map((controlName, index) => {
-      const control = this.state.formControls[controlName] //это quistion и option 1,2,3,4
+      const control = this.state.formControls[controlName] //текущий объект quistion и option 1,2,3,4 из стейта
 
       return (
         <Auxiliary key={controlName + index}>
@@ -71,7 +91,7 @@ export default class QuizCreator extends Component {
             shouldValidate={!!control.validation}
             touched={control.touched}
             onChange={(Event) =>
-              this.changeHandker(Event.target.value, controlName)
+              this.changeHandler(Event.target.value, controlName)
             }
           />
 
@@ -109,10 +129,18 @@ export default class QuizCreator extends Component {
           <form onSubmit={this.submitHandler}>
             {this.renderControl()}
             {select}
-            <Button type="primary" onClick={this.addQuestionHandler}>
+            <Button
+              type="primary"
+              onClick={this.addQuestionHandler}
+              disabled={!this.state.isFormValid}
+            >
               Добавить вопрос
             </Button>
-            <Button type="success" onClick={this.createQuizHandler}>
+            <Button
+              type="success"
+              onClick={this.createQuizHandler}
+              disabled={this.state.quiz.length === 0} //если нет вопросов, то кнопка неактивна
+            >
               Создать тест
             </Button>
           </form>
