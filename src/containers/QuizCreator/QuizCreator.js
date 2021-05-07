@@ -5,7 +5,7 @@ import Select from '../../components/UI/Select/Select'
 import Input from '../../components/UI/Input/Input'
 import { createControl, validate, validateForm } from '../../form/formFramework'
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
-import axios from 'axios'
+import axios from '../../axios/axioz-quiz'
 
 //генерация вариантов ответа
 function createOptionControl(number) {
@@ -117,7 +117,7 @@ export default class QuizCreator extends Component {
     try {
       //axios вернет promis, а метод await все распарсит,
       await axios.post(
-        'https://reacr-quiz-33e60-default-rtdb.europe-west1.firebasedatabase.app/quizes.json',
+        '/quizes.json', //URL с axios-quiz
         this.state.quiz
       )
 

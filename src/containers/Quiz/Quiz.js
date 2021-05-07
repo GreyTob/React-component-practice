@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import classes from './Quiz.module.css'
 import ActiveQuiz from '../../components/ActiveQuiz/ActiveQuiz'
 import FinishedQuiz from '../../components/FinishedQuiz/FinishedQuiz'
+import axios from '../../axios/axioz-quiz'
+import Loader from '../../components/UI/Loader/Loader'
 
 class Quiz extends Component {
   state = {
@@ -9,30 +11,33 @@ class Quiz extends Component {
     isFinished: false,
     activeQuestions: 0,
     answerState: null, // {[id]: 'success' 'error'}
-    quiz: [
-      {
-        question: 'Какого цвета небо?',
-        rightAnswerId: 3,
-        id: 1,
-        answers: [
-          { text: 'Красного', id: 1 },
-          { text: 'Зеленого', id: 2 },
-          { text: 'Голубого', id: 3 },
-          { text: 'Черного', id: 4 },
-        ],
-      },
-      {
-        question: 'Столица Канады?',
-        rightAnswerId: 4,
-        id: 2,
-        answers: [
-          { text: 'Квебек', id: 1 },
-          { text: 'Торонто', id: 2 },
-          { text: 'Ванкувер', id: 3 },
-          { text: 'Оттава', id: 4 },
-        ],
-      },
-    ],
+    loading: true, //для лоадера
+    quiz: [],
+
+    //для тестирования
+    //   [{
+    //     question: 'Какого цвета небо?',
+    //     rightAnswerId: 3,
+    //     id: 1,
+    //     answers: [
+    //       { text: 'Красного', id: 1 },
+    //       { text: 'Зеленого', id: 2 },
+    //       { text: 'Голубого', id: 3 },
+    //       { text: 'Черного', id: 4 },
+    //     ],
+    //   },
+    //   {
+    //     question: 'Столица Канады?',
+    //     rightAnswerId: 4,
+    //     id: 2,
+    //     answers: [
+    //       { text: 'Квебек', id: 1 },
+    //       { text: 'Торонто', id: 2 },
+    //       { text: 'Ванкувер', id: 3 },
+    //       { text: 'Оттава', id: 4 },
+    //     ],
+    //   },
+    // ],
   }
 
   onAnswerClickHandler = (answerId) => {
@@ -95,7 +100,24 @@ class Quiz extends Component {
     })
   }
 
-  componentDidMount() {
+  //запрашиваем массив quizes ссервера(пример в QuizList)
+  async componentDidMount() {
+    try {
+      const response = await axios.get(
+        `/quizes/${this.props.match.params.id}.json`
+      )
+      //полученные данные запишем в переменную
+      const quiz = response.data
+
+      this.setState({
+        quiz,
+        loading: false,
+      })
+    } catch (e) {
+      console.log(e)
+    }
+
+    //id квиза
     console.log('Qiuz id = ', this.props.match.params.id)
   }
 
@@ -105,7 +127,9 @@ class Quiz extends Component {
         <div className={classes.QuizWrapper}>
           <h1>Ответьте на все вопросы</h1>
 
-          {this.state.isFinished ? (
+          {this.state.loading ? (
+            <Loader />
+          ) : this.state.isFinished ? (
             <FinishedQuiz
               results={this.state.results}
               quiz={this.state.quiz}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import classes from './QuizList.module.css'
 import { NavLink } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../../axios/axioz-quiz'
 import Loader from '../../components/UI/Loader/Loader'
 
 export default class QuizList extends Component {
@@ -27,7 +27,7 @@ export default class QuizList extends Component {
     //   //get-запрос для проверки базы данных axios
     //   axios
     //     .get(
-    //       'https://reacr-quiz-33e60-default-rtdb.europe-west1.firebasedatabase.app/quiz.json'
+    //       'https://reacr-quiz-33e60-default-rtdb.europe-west1.firebasedatabase.app/quiz.json'// без axios-quiz
     //     )
     //     .then((response) => {
     //       console.log(response)
@@ -37,13 +37,13 @@ export default class QuizList extends Component {
     // try-catch, на случай ошибки
     try {
       const response = await axios.get(
-        'https://reacr-quiz-33e60-default-rtdb.europe-west1.firebasedatabase.app/quizes.json'
+        '/quizes.json' //URL с axios-quiz
       )
       //создаю локальную переменную quizes, для последующего добавления её в state
       const quizes = []
       //преобразуем id'шники полученных данных
       Object.keys(response.data).forEach((key, index) => {
-        //на каждой итерации токнем в локальный quizes key
+        //на каждой итерации толкнем в локальный quizes key
         quizes.push({
           id: key,
           name: ` №${index + 1}`,
