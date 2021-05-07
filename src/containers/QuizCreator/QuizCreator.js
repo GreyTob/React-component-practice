@@ -5,6 +5,7 @@ import Select from '../../components/UI/Select/Select'
 import Input from '../../components/UI/Input/Input'
 import { createControl, validate, validateForm } from '../../form/formFramework'
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
+import axios from 'axios'
 
 //генерация вариантов ответа
 function createOptionControl(number) {
@@ -92,15 +93,48 @@ export default class QuizCreator extends Component {
     })
   }
 
-  createQuizHandler = (Event) => {
+  createQuizHandler = async (Event) => {
     Event.preventDefault()
-
-    console.log(this.state.quiz)
+    //console.log(this.state.quiz)
     //TODO: server
+
+    //способ для СИНХРОННОЙ функции createQuizHandler
+    //передача данных на сервер, метод post().
+    //первыйм параметром передаем адрес сервераю(firebase). Добавил название таблицы: /quizes.json
+    //вторым параметром передаем сформированный массив из стейта
+    // axios
+    //   .post(
+    //     'https://reacr-quiz-33e60-default-rtdb.europe-west1.firebasedatabase.app/quizes.json',
+    //     this.state.quiz
+    //   )
+    //   //axios возвращает promis, поэтому можно воспользоваться методом then()
+    //   .then((response) => console.log(response))
+    //   //на случай ошибки метод catch()
+    //   .catch((error) => console.log(error))
+
+    //способ для АСИНХРОННОЙ функции createQuizHandler, добавляю async
+
+    try {
+      //axios вернет promis, а метод await все распарсит,
+      await axios.post(
+        'https://reacr-quiz-33e60-default-rtdb.europe-west1.firebasedatabase.app/quizes.json',
+        this.state.quiz
+      )
+
+      //после отправки данных на сервер меняем state и обнуляем состояние страницы
+      this.setState({
+        quiz: [],
+        isFormValid: false,
+        rightAnswerId: 1,
+        formControls: createFormControl(),
+      })
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   changeHandler = (value, controlName) => {
-    //пример в Auth.js
+    //хороший пример в Auth.js
     const formControls = { ...this.state.formControls } //оператор spread развернет (сделае копию) this.state.formControls
     const control = { ...formControls[controlName] } //текущий объект quistion и option 1,2,3,4 из стейта
 
