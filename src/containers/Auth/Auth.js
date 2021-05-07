@@ -3,6 +3,7 @@ import classes from './Auth.module.css'
 import Button from '../../components/UI/Button/Button'
 import Input from '../../components/UI/Input/Input'
 import is from 'is_js' //библиотека micro check: npm i is_js / yarn add is-js
+import axios from 'axios' //библиотека-аналог fetch yarn add axios
 
 //это готовое regex cо stackoverflow для валидации email
 // function validateEmail(email) {
@@ -41,9 +42,46 @@ export default class Auth extends Component {
     },
   }
 
-  loginHandler = () => {}
+  loginHandler = async () => {
+    //firebase rest auth авторизация  https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
+    const authData = {
+      email: this.state.formControls.email.value,
+      password: this.state.formControls.password.value,
+      returnSecureToken: true,
+    }
 
-  registerHandler = () => {}
+    try {
+      const response = await axios.post(
+        //[API_KEY] с firebase вкладка обзор проекта / настройка
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDZ7o3sr0ugFlz3U4lt85Gyf1Gbw1zoyHg',
+        authData
+      )
+      console.log(response.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  registerHandler = async () => {
+    //firebase rest auth регистрация
+    //формирую объект для отправки на сервер
+    const authData = {
+      email: this.state.formControls.email.value,
+      password: this.state.formControls.password.value,
+      returnSecureToken: true,
+    }
+
+    try {
+      const response = await axios.post(
+        //[API_KEY] с firebase вкладка обзор проекта / настройка
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDZ7o3sr0ugFlz3U4lt85Gyf1Gbw1zoyHg',
+        authData
+      )
+      console.log(response.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   submitHandler = (event) => {
     event.preventDefault()
