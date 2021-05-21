@@ -103,6 +103,7 @@ class Quiz extends Component {
   }
 
   render() {
+    console.log(this.props)
     return (
       <div className={classes.Quiz}>
         <div className={classes.QuizWrapper}>
@@ -121,7 +122,7 @@ class Quiz extends Component {
               answers={this.props.quiz[this.props.activeQuestion].answers}
               question={this.props.quiz[this.props.activeQuestion].question}
               onAnswerClick={this.onAnswerClickHandler}
-              quizLength={this.props.quiz.length}
+              quizLenght={this.props.quiz.length}
               answerNumber={this.props.activeQuestion + 1}
               state={this.props.answerState}
             />
@@ -138,8 +139,8 @@ function mapStateToProps(state) {
     isFinished: state.quiz.isFinished,
     activeQuestion: state.quiz.activeQuestion,
     answerState: state.quiz.answerState,
-    quiz: state.quiz.quiz,
     loading: state.quiz.loading,
+    quiz: state.quiz.quiz,
   }
 }
 
