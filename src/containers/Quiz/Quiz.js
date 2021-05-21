@@ -35,11 +35,9 @@ class Quiz extends Component {
   // }
 
   onAnswerClickHandler = (answerId) => {
-    // console.log('results: ',this.state.results)
-
-    if (this.state.answerState) {
-      const key = Object.keys(this.state.answerState)[0]
-      if (this.state.answerState[key] === 'success') {
+    if (this.props.answerState) {
+      const key = Object.keys(this.props.answerState)[0]
+      if (this.props.answerState[key] === 'success') {
         return
       }
     }
