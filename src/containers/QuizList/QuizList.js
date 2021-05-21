@@ -1,18 +1,13 @@
 import React, { Component } from 'react'
 import classes from './QuizList.module.css'
 import { NavLink } from 'react-router-dom'
-import axios from '../../axios/axioz-quiz'
 import Loader from '../../components/UI/Loader/Loader'
+import { connect } from 'react-redux'
+import { fetchQuizes } from '../../store/actions/quiz'
 
-export default class QuizList extends Component {
-  //создаем state c пустым массивом quizes для хранения полученных с сервера вопросов
-  state = {
-    quizes: [],
-    loading: true, //для компонента loader
-  }
-
+class QuizList extends Component {
   renderQuizes() {
-    return this.state.quizes.map((quiz) => {
+    return this.props.quizes.map((quiz) => {
       return (
         <li key={quiz.id}>
           <NavLink to={'/quiz/' + quiz.id}>Тест {quiz.name}</NavLink>
@@ -21,42 +16,8 @@ export default class QuizList extends Component {
     })
   }
 
-  //при запроса данных от сервера нужно использовать данный жизненный цикл(нужно чтоб было построено DOM-дерево прежде чем менять state)
-  async componentDidMount() {
-    //тест для проверки сервера
-    //   //get-запрос для проверки базы данных axios
-    //   axios
-    //     .get(
-    //       'https://reacr-quiz-33e60-default-rtdb.europe-west1.firebasedatabase.app/quiz.json'// без axios-quiz
-    //     )
-    //     .then((response) => {
-    //       console.log(response)
-    //     })
-
-    //обращаемся к серверуб к массиву quizes
-    // try-catch, на случай ошибки
-    try {
-      const response = await axios.get(
-        '/quizes.json' //URL с axios-quiz
-      )
-      //создаю локальную переменную quizes, для последующего добавления её в state
-      const quizes = []
-      //преобразуем id'шники полученных данных
-      Object.keys(response.data).forEach((key, index) => {
-        //на каждой итерации толкнем в локальный quizes key
-        quizes.push({
-          id: key,
-          name: ` №${index + 1}`,
-        })
-      })
-
-      this.setState({
-        quizes,
-        loading: false, //после того как загрузка с сервера закончится, лоадер уберется
-      })
-    } catch (e) {
-      console.log(e)
-    }
+  componentDidMount() {
+    this.props.fetchQuizes()
   }
 
   render() {
@@ -65,9 +26,28 @@ export default class QuizList extends Component {
         <div>
           <h1>Список тестов</h1>
 
-          {this.state.loading ? <Loader /> : <ul>{this.renderQuizes()}</ul>}
+          {this.props.loading && this.props.quizes.length !== 0 ? (
+            <Loader />
+          ) : (
+            <ul>{this.renderQuizes()}</ul>
+          )}
         </div>
       </div>
     )
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    quizes: state.quiz.quizes,
+    loading: state.quiz.loading,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchQuizes: () => dispatch(fetchQuizes()),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuizList)
