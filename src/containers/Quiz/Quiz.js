@@ -2,43 +2,37 @@ import React, { Component } from 'react'
 import classes from './Quiz.module.css'
 import ActiveQuiz from '../../components/ActiveQuiz/ActiveQuiz'
 import FinishedQuiz from '../../components/FinishedQuiz/FinishedQuiz'
-import axios from '../../axios/axioz-quiz'
 import Loader from '../../components/UI/Loader/Loader'
+import { connect } from 'react-redux'
+import { fetchQuizById } from '../../store/actions/quiz'
 
 class Quiz extends Component {
-  state = {
-    results: {}, // {[id]: success error}
-    isFinished: false,
-    activeQuestions: 0,
-    answerState: null, // {[id]: 'success' 'error'}
-    loading: true, //для лоадера
-    quiz: [],
-
-    //для тестирования
-    //   [{
-    //     question: 'Какого цвета небо?',
-    //     rightAnswerId: 3,
-    //     id: 1,
-    //     answers: [
-    //       { text: 'Красного', id: 1 },
-    //       { text: 'Зеленого', id: 2 },
-    //       { text: 'Голубого', id: 3 },
-    //       { text: 'Черного', id: 4 },
-    //     ],
-    //   },
-    //   {
-    //     question: 'Столица Канады?',
-    //     rightAnswerId: 4,
-    //     id: 2,
-    //     answers: [
-    //       { text: 'Квебек', id: 1 },
-    //       { text: 'Торонто', id: 2 },
-    //       { text: 'Ванкувер', id: 3 },
-    //       { text: 'Оттава', id: 4 },
-    //     ],
-    //   },
-    // ],
-  }
+  // state = {
+  //для тестирования
+  //   [{
+  //     question: 'Какого цвета небо?',
+  //     rightAnswerId: 3,
+  //     id: 1,
+  //     answers: [
+  //       { text: 'Красного', id: 1 },
+  //       { text: 'Зеленого', id: 2 },
+  //       { text: 'Голубого', id: 3 },
+  //       { text: 'Черного', id: 4 },
+  //     ],
+  //   },
+  //   {
+  //     question: 'Столица Канады?',
+  //     rightAnswerId: 4,
+  //     id: 2,
+  //     answers: [
+  //       { text: 'Квебек', id: 1 },
+  //       { text: 'Торонто', id: 2 },
+  //       { text: 'Ванкувер', id: 3 },
+  //       { text: 'Оттава', id: 4 },
+  //     ],
+  //   },
+  // ],
+  // }
 
   onAnswerClickHandler = (answerId) => {
     // console.log('results: ',this.state.results)
@@ -101,24 +95,11 @@ class Quiz extends Component {
   }
 
   //запрашиваем массив quizes ссервера(пример в QuizList)
-  async componentDidMount() {
-    try {
-      const response = await axios.get(
-        `/quizes/${this.props.match.params.id}.json`
-      )
-      //полученные данные запишем в переменную
-      const quiz = response.data
+  componentDidMount() {
+    //console.log(this.props)
 
-      this.setState({
-        quiz,
-        loading: false,
-      })
-    } catch (e) {
-      console.log(e)
-    }
-
-    //id квиза
-    console.log('Qiuz id = ', this.props.match.params.id)
+    //парамерт в функцию - текущий id - this.props.match.params.id
+    this.props.fetchQuizById(this.props.match.params.id)
   }
 
   render() {
@@ -127,22 +108,22 @@ class Quiz extends Component {
         <div className={classes.QuizWrapper}>
           <h1>Ответьте на все вопросы</h1>
 
-          {this.state.loading ? (
+          {this.props.loading || !this.props.quiz ? (
             <Loader />
-          ) : this.state.isFinished ? (
+          ) : this.props.isFinished ? (
             <FinishedQuiz
-              results={this.state.results}
-              quiz={this.state.quiz}
+              results={this.props.results}
+              quiz={this.props.quiz}
               onRetry={this.retryHandler}
             />
           ) : (
             <ActiveQuiz
-              answers={this.state.quiz[this.state.activeQuestions].answers}
-              question={this.state.quiz[this.state.activeQuestions].question}
+              answers={this.props.quiz[this.props.activeQuestion].answers}
+              question={this.props.quiz[this.props.activeQuestion].question}
               onAnswerClick={this.onAnswerClickHandler}
-              quizLenght={this.state.quiz.length}
-              answerNumber={this.state.activeQuestions + 1}
-              state={this.state.answerState}
+              quizLength={this.props.quiz.length}
+              answerNumber={this.props.activeQuestion + 1}
+              state={this.props.answerState}
             />
           )}
         </div>
@@ -151,4 +132,21 @@ class Quiz extends Component {
   }
 }
 
-export default Quiz
+function mapStateToProps(state) {
+  return {
+    results: state.quiz.results,
+    isFinished: state.quiz.isFinished,
+    activeQuestion: state.quiz.activeQuestion,
+    answerState: state.quiz.answerState,
+    quiz: state.quiz.quiz,
+    loading: state.quiz.loading,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchQuizById: (id) => dispatch(fetchQuizById(id)),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Quiz)
