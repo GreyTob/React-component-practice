@@ -5,7 +5,11 @@ import Select from '../../components/UI/Select/Select'
 import Input from '../../components/UI/Input/Input'
 import { createControl, validate, validateForm } from '../../form/formFramework'
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
-import axios from '../../axios/axioz-quiz'
+import { connect } from 'react-redux'
+import {
+  createQuizQuestion,
+  finishCreatequiz,
+} from '../../store/actions/creacte'
 
 //генерация вариантов ответа
 function createOptionControl(number) {
@@ -40,9 +44,9 @@ function createFormControl() {
   }
 }
 
-export default class QuizCreator extends Component {
+class QuizCreator extends Component {
   state = {
-    quiz: [], //для хранения созданных вопросов
+    // quiz: [], //перенес в redux
     isFormValid: false,
     rightAnswerId: 1, //значение по умолчанию
     formControls: createFormControl(),
@@ -55,82 +59,47 @@ export default class QuizCreator extends Component {
   addQuestionHandler = (Event) => {
     Event.preventDefault()
 
-    //сделаем копию массива quiz. метод concat() без параметров вернет копию массива
-    const quiz = this.state.quiz.concat() // это защищает от мутаций
-    const index = quiz.length + 1 //будем использовать в качестве id
-
     //деструктуризация для сокращения окда
-    const {
-      question,
-      option1,
-      option2,
-      option3,
-      option4,
-    } = this.state.formControls
+    const { question, option1, option2, option3, option4 } =
+      this.state.formControls
 
     // формируем объект каждого из вопросов
     const questonItem = {
-      question: question.value, //за счет деструктуризации не прописывается this.state.formControls.
-      id: index,
+      question: question.value,
+      id: this.props.quiz.length + 1,
       rightAnswerId: this.state.rightAnswerId,
       answers: [
-        { text: option1.value, id: option1.id }, //за счет деструктуризации не прописывается this.state.formControls.
+        { text: option1.value, id: option1.id },
         { text: option2.value, id: option2.id },
         { text: option3.value, id: option3.id },
         { text: option4.value, id: option4.id },
       ],
     }
 
-    //сформированный объект добавляем в массив quiz
-    quiz.push(questonItem)
+    //сформированный questonItem пеердаем в redux
+    this.props.createQuizQuestion(questonItem)
 
     //меняем state и обнуляем состояние страницы
     this.setState({
-      quiz,
       isFormValid: false,
       rightAnswerId: 1,
       formControls: createFormControl(),
     })
   }
 
-  createQuizHandler = async (Event) => {
+  createQuizHandler = (Event) => {
     Event.preventDefault()
-    //console.log(this.state.quiz)
-    //TODO: server
 
-    //способ для СИНХРОННОЙ функции createQuizHandler
-    //передача данных на сервер, метод post().
-    //первыйм параметром передаем адрес сервераю(firebase). Добавил название таблицы: /quizes.json
-    //вторым параметром передаем сформированный массив из стейта
-    // axios
-    //   .post(
-    //     'https://reacr-quiz-33e60-default-rtdb.europe-west1.firebasedatabase.app/quizes.json',
-    //     this.state.quiz
-    //   )
-    //   //axios возвращает promis, поэтому можно воспользоваться методом then()
-    //   .then((response) => console.log(response))
-    //   //на случай ошибки метод catch()
-    //   .catch((error) => console.log(error))
+    //axios вернет promis, а метод await все распарсит,
 
-    //способ для АСИНХРОННОЙ функции createQuizHandler, добавляю async
+    //после отправки данных на сервер меняем state и обнуляем состояние страницы
+    this.setState({
+      isFormValid: false,
+      rightAnswerId: 1,
+      formControls: createFormControl(),
+    })
 
-    try {
-      //axios вернет promis, а метод await все распарсит,
-      await axios.post(
-        '/quizes.json', //URL с axios-quiz
-        this.state.quiz
-      )
-
-      //после отправки данных на сервер меняем state и обнуляем состояние страницы
-      this.setState({
-        quiz: [],
-        isFormValid: false,
-        rightAnswerId: 1,
-        formControls: createFormControl(),
-      })
-    } catch (e) {
-      console.log(e)
-    }
+    this.props.finishCreatequiz()
   }
 
   changeHandler = (value, controlName) => {
@@ -213,7 +182,7 @@ export default class QuizCreator extends Component {
             <Button
               type="success"
               onClick={this.createQuizHandler}
-              disabled={this.state.quiz.length === 0} //если нет вопросов, то тест не создатся
+              disabled={this.props.quiz.length === 0} //если нет вопросов, то тест не создатся
             >
               Создать тест
             </Button>
@@ -223,3 +192,18 @@ export default class QuizCreator extends Component {
     )
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    quiz: state.create.quiz,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    createQuizQuestion: (item) => dispatch(createQuizQuestion(item)),
+    finishCreatequiz: () => dispatch(finishCreatequiz()),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuizCreator)

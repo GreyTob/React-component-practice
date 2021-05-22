@@ -9,3 +9,7 @@ export const QUIZ_SET_STATE = 'QUIZ_SET_STATE'
 export const FINISH_QUIZ = 'FINISH_QUIZ'
 export const QUIZ_NEXT_QUESTION = 'QUIZ_NEXT_QUESTION'
 export const QUIZ_RETRY = 'QUIZ_RETRY'
+
+//quizCreator
+export const CREATE_QUIZ_ACTION = 'CREATE_QUIZ_ACTION'
+export const RESET_QUIZ_CREATION = 'RESET_QUIZ_CREATION'
