@@ -13,3 +13,7 @@ export const QUIZ_RETRY = 'QUIZ_RETRY'
 //quizCreator
 export const CREATE_QUIZ_ACTION = 'CREATE_QUIZ_ACTION'
 export const RESET_QUIZ_CREATION = 'RESET_QUIZ_CREATION'
+
+//Auth
+export const AUTH_SUCCESS = 'AUTH_SUCCESS'
+export const AUTH_LOGOUT = 'AUTH_LOGOUT'

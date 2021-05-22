@@ -3,7 +3,8 @@ import classes from './Auth.module.css'
 import Button from '../../components/UI/Button/Button'
 import Input from '../../components/UI/Input/Input'
 import is from 'is_js' //библиотека micro check: npm i is_js / yarn add is-js
-import axios from 'axios' //библиотека-аналог fetch yarn add axios
+import { connect } from 'react-redux'
+import { auth } from '../../store/actions/auth'
 
 //это готовое regex cо stackoverflow для валидации email
 // function validateEmail(email) {
@@ -11,7 +12,7 @@ import axios from 'axios' //библиотека-аналог fetch yarn add axi
 //   return re.test(String(email).toLowerCase())
 // }
 
-export default class Auth extends Component {
+class Auth extends Component {
   state = {
     isFormValid: false,
     formControls: {
@@ -42,45 +43,20 @@ export default class Auth extends Component {
     },
   }
 
-  loginHandler = async () => {
-    //firebase rest auth авторизация  https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
-    const authData = {
-      email: this.state.formControls.email.value,
-      password: this.state.formControls.password.value,
-      returnSecureToken: true,
-    }
-
-    try {
-      const response = await axios.post(
-        //[API_KEY] с firebase вкладка обзор проекта / настройка
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDZ7o3sr0ugFlz3U4lt85Gyf1Gbw1zoyHg',
-        authData
-      )
-      console.log(response.data)
-    } catch (e) {
-      console.log(e)
-    }
+  loginHandler = () => {
+    this.props.auth(
+      this.state.formControls.email.value,
+      this.state.formControls.password.value,
+      true
+    )
   }
 
-  registerHandler = async () => {
-    //firebase rest auth регистрация
-    //формирую объект для отправки на сервер
-    const authData = {
-      email: this.state.formControls.email.value,
-      password: this.state.formControls.password.value,
-      returnSecureToken: true,
-    }
-
-    try {
-      const response = await axios.post(
-        //[API_KEY] с firebase вкладка обзор проекта / настройка
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDZ7o3sr0ugFlz3U4lt85Gyf1Gbw1zoyHg',
-        authData
-      )
-      console.log(response.data)
-    } catch (e) {
-      console.log(e)
-    }
+  registerHandler = () => {
+    this.props.auth(
+      this.state.formControls.email.value,
+      this.state.formControls.password.value,
+      false
+    )
   }
 
   submitHandler = (event) => {
@@ -189,3 +165,13 @@ export default class Auth extends Component {
     )
   }
 }
+//т.к state не нужен, то mapStateToProps не создаем
+
+function mapDispatchToProps(dispatch) {
+  return {
+    auth: (email, password, isLogin) =>
+      dispatch(auth(email, password, isLogin)),
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Auth)
