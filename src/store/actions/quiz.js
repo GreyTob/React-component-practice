@@ -4,10 +4,10 @@ import {
   FETCH_QUIZES_ERROR,
   FETCH_QUIZES_START,
   FETCH_QUIZES_SUCCESS,
-  QUIZ_SET_STATE,
   FINISH_QUIZ,
-  QUIZ_NEXT_QUIESTION,
+  QUIZ_NEXT_QUESTION,
   QUIZ_RETRY,
+  QUIZ_SET_STATE,
 } from './actionTypes'
 
 export function fetchQuizes() {
@@ -19,10 +19,9 @@ export function fetchQuizes() {
       const quizes = []
 
       Object.keys(response.data).forEach((key) => {
-        console.log(response.data[key])
         quizes.push({
           id: key,
-          name: `№ ${response.data[key][0].question}`,
+          name: ` № ${response.data[key][0].question}`,
         })
       })
 
@@ -48,7 +47,6 @@ export function fetchQuizById(quizId) {
   }
 }
 
-//QuizList
 export function fetchQuizSuccess(quiz) {
   return {
     type: FETCH_QUIZ_SUCCESS,
@@ -76,10 +74,6 @@ export function fetchQuizesError(e) {
   }
 }
 
-function isQuizFinished(state) {
-  return state.activeQuestion + 1 === state.quiz.length
-}
-
 export function quizSetState(answerState, results) {
   return {
     type: QUIZ_SET_STATE,
@@ -96,7 +90,7 @@ export function finishQuiz() {
 
 export function quizNextQuestion(number) {
   return {
-    type: QUIZ_NEXT_QUIESTION,
+    type: QUIZ_NEXT_QUESTION,
     number,
   }
 }
@@ -107,7 +101,7 @@ export function retryQuiz() {
   }
 }
 
-export function quizkAnswerClick(answerId) {
+export function quizAnswerClick(answerId) {
   //async нет, потомучто нет запроса на сервер
   //метод getState позволяет получить доступ к нужному нам state - поле  .quiz
   return (dispatch, getState) => {
@@ -129,33 +123,22 @@ export function quizkAnswerClick(answerId) {
       }
 
       dispatch(quizSetState({ [answerId]: 'success' }, results))
-      // this.setState({
-      //   answerState: { [answerId]: 'success' },
-      //   results, //results: results
-      // })
 
       const timeout = window.setTimeout(() => {
         if (isQuizFinished(state)) {
           dispatch(finishQuiz())
-          // this.setState({
-          //   isFinished: true,
-          // })
         } else {
           dispatch(quizNextQuestion(state.activeQuestion + 1))
-          // this.setState({
-          //   activeQuestion: this.state.activeQuestion + 1,
-          //   answerState: null,
-          // })
         }
         window.clearTimeout(timeout)
       }, 1000)
     } else {
       results[question.id] = 'error'
       dispatch(quizSetState({ [answerId]: 'error' }, results))
-      // this.setState({
-      //   answerState: { [answerId]: 'error' },
-      //   results: results, //или просто results
-      // })
     }
   }
+}
+
+function isQuizFinished(state) {
+  return state.activeQuestion + 1 === state.quiz.length
 }
