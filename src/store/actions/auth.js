@@ -31,6 +31,7 @@ export function auth(email, password, isLogin) {
     localStorage.setItem('toekn', data.idToken)
     localStorage.setItem('userId', data.localId)
     localStorage.setItem('expiresinDate', expiresinDate)
+    console.log(localStorage)
 
     dispatch(authSuccess(data.idToken))
     dispatch(autoLogout(data.expiresIn))
@@ -44,6 +45,12 @@ export function authSuccess(token) {
   }
 }
 
+// export function autoLogin() {
+//   return dispatch() => {
+
+//   }
+// }
+
 export function autoLogout(time) {
   return (dispatch) => {
     setTimeout(() => {
@@ -53,7 +60,7 @@ export function autoLogout(time) {
 }
 
 export function logout() {
-  //очистить сторэдж
+  //очистить локал сторэдж
   localStorage.removeItem('toekn')
   localStorage.removeItem('userId')
   localStorage.removeItem('expiresinDate')
