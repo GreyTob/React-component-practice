@@ -56,7 +56,7 @@ const FinishedQuiz = (props) => {
           <Button type="success">Перейти в список тестов</Button>
         </Link>
 
-        <Button type="error">Ошибка</Button>
+        {/* <Button type="error">Ошибка</Button> */}
       </div>
     </div>
   )
