@@ -25,18 +25,19 @@ export function auth(email, password, isLogin) {
     const data = response.data
 
     //токен дается на час(записано в response.data.expiresIn), если он прошел то нужно логиниться заново
-    const expiresinDate = new Date(new Date().getTime + data.expiresIn * 1000)
+    const expirationDate = new Date(new Date().getTime + data.expiresIn * 1000)
 
     //чтобы поддерживать текущую сессию нужно полученный с сервера токен положить в локал сторэдж
     localStorage.setItem('toekn', data.idToken)
     localStorage.setItem('userId', data.localId)
-    localStorage.setItem('expiresinDate', expiresinDate)
-    console.log(localStorage)
+    localStorage.setItem('expirationDate', expirationDate)
+    //console.log('auth', localStorage)
 
     dispatch(authSuccess(data.idToken))
     dispatch(autoLogout(data.expiresIn))
   }
 }
+console.log('auth', localStorage)
 
 export function authSuccess(token) {
   return {
@@ -45,11 +46,28 @@ export function authSuccess(token) {
   }
 }
 
-// export function autoLogin() {
-//   return dispatch() => {
-
-//   }
-// }
+export function autoLogin() {
+  return (dispatch) => {
+    const token = localStorage.getItem('token')
+    //если токена нет, то логаут
+    if (!token) {
+      dispatch(logout())
+    } else {
+      //если токен есть, то проверяем его валидность
+      const expirationDate = new Date(localStorage.getItem('expirationDate'))
+      //если время токина истекло, то логаут
+      if (expirationDate <= new Date()) {
+        dispatch(logout())
+      } else {
+        //логинимся
+        dispatch(authSuccess(token))
+        dispatch(
+          autoLogout((expirationDate.getTime() - new Date().getTime) / 1000)
+        )
+      }
+    }
+  }
+}
 
 export function autoLogout(time) {
   return (dispatch) => {
