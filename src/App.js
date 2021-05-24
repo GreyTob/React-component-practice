@@ -32,7 +32,7 @@ class App extends React.Component {
       routes = (
         <Switch>
           {/* <Route path="/auth" component={Auth} /> */}
-          <Route path="/quiz-creator" component={QuizCreator} />
+          <Route path="/quiz-create" component={QuizCreator} />
           <Route path="/quiz/:id" component={Quiz} />
           <Route path="/logout" component={Logout} />
           <Route path="/" exact component={QuizList} />
@@ -47,6 +47,8 @@ class App extends React.Component {
 }
 
 function mapStateToProps(state) {
+  //авторизован пользователь или нет?
+  //!! приводит к булевскому типу
   return {
     isAuthenticated: !!state.auth.token,
   }
