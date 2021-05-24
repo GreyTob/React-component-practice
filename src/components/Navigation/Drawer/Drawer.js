@@ -44,7 +44,7 @@ class Drawer extends Component {
       // { to: '/quiz-create', label: 'Создать тест', exact: false },
     ]
 
-    console.log('drawer', this.props.isAuthenticated)
+    // console.log('drawer', this.props.isAuthenticated)
 
     //если залогинены, то добавляем поля
     if (this.props.isAuthenticated) {
