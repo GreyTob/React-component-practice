@@ -23,7 +23,7 @@ class App extends React.Component {
         <Route path="/quiz/:id" component={Quiz} />
         <Route path="/" exact component={QuizList} />
         {/* на случай если указан неверный путь */}
-        <Redirect to={'/'} />
+        <Redirect to="/" />
       </Switch>
     )
 
@@ -32,12 +32,12 @@ class App extends React.Component {
       routes = (
         <Switch>
           {/* <Route path="/auth" component={Auth} /> */}
-          <Route path="/quiz-create" component={QuizCreator} />
+          <Route path="/quiz-creator" component={QuizCreator} />
           <Route path="/quiz/:id" component={Quiz} />
-          <Route path="logout" component={Logout} />
+          <Route path="/logout" component={Logout} />
           <Route path="/" exact component={QuizList} />
           {/* на случай если указан неверный путь */}
-          <Redirect to={'/'} />
+          <Redirect to="/" />
         </Switch>
       )
     }
@@ -48,8 +48,6 @@ class App extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    //авторизован пользователь или нет?
-    //!! приводит к булевскому типу
     isAuthenticated: !!state.auth.token,
   }
 }

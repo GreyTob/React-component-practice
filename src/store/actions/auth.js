@@ -1,12 +1,12 @@
 import axios from 'axios'
-import { AUTH_SUCCESS, AUTH_LOGOUT } from './actionTypes'
+import { AUTH_LOGOUT, AUTH_SUCCESS } from './actionTypes'
 
 export function auth(email, password, isLogin) {
   return async (dispatch) => {
     const authData = {
       email,
       password,
-      returnSecureToken: true, //нужен по умолчанию в firebase
+      returnSecureToken: true,
     }
 
     //если регистрация
@@ -19,30 +19,42 @@ export function auth(email, password, isLogin) {
         'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDZ7o3sr0ugFlz3U4lt85Gyf1Gbw1zoyHg'
     }
 
-    //[API_KEY] с firebase вкладка обзор проекта / настройка
+    // [API_KEY] с firebase вкладка обзор проекта / настройка
     const response = await axios.post(url, authData)
     //console.log(response.data)
     const data = response.data
 
     //токен дается на час(записано в response.data.expiresIn), если он прошел то нужно логиниться заново
-    const expirationDate = new Date(new Date().getTime + data.expiresIn * 1000)
+    const expirationDate = new Date(
+      new Date().getTime() + data.expiresIn * 1000
+    )
 
     //чтобы поддерживать текущую сессию нужно полученный с сервера токен положить в локал сторэдж
-    localStorage.setItem('toekn', data.idToken)
+    localStorage.setItem('token', data.idToken)
     localStorage.setItem('userId', data.localId)
     localStorage.setItem('expirationDate', expirationDate)
-    //console.log('auth', localStorage)
 
     dispatch(authSuccess(data.idToken))
     dispatch(autoLogout(data.expiresIn))
   }
 }
-console.log('auth', localStorage)
 
-export function authSuccess(token) {
+export function autoLogout(time) {
+  return (dispatch) => {
+    setTimeout(() => {
+      dispatch(logout())
+    }, time * 1000)
+  }
+}
+
+export function logout() {
+  //очистить локал сторэдж
+  localStorage.removeItem('token')
+  localStorage.removeItem('userId')
+  localStorage.removeItem('expirationDate')
+
   return {
-    type: AUTH_SUCCESS,
-    token,
+    type: AUTH_LOGOUT,
   }
 }
 
@@ -62,28 +74,16 @@ export function autoLogin() {
         //логинимся
         dispatch(authSuccess(token))
         dispatch(
-          autoLogout((expirationDate.getTime() - new Date().getTime) / 1000)
+          autoLogout((expirationDate.getTime() - new Date().getTime()) / 1000)
         )
       }
     }
   }
 }
 
-export function autoLogout(time) {
-  return (dispatch) => {
-    setTimeout(() => {
-      dispatch(logout())
-    }, time * 1000)
-  }
-}
-
-export function logout() {
-  //очистить локал сторэдж
-  localStorage.removeItem('toekn')
-  localStorage.removeItem('userId')
-  localStorage.removeItem('expiresinDate')
-
+export function authSuccess(token) {
   return {
-    type: AUTH_LOGOUT,
+    type: AUTH_SUCCESS,
+    token,
   }
 }
