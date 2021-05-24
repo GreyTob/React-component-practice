@@ -1,18 +1,20 @@
-import React from "react"
-import classes from "./ActiveQuiz.module.css"
-import AnswerList from "./AnswersList/AnswersList"
+import React from 'react'
+import classes from './ActiveQuiz.module.css'
+import AnswerList from './AnswersList/AnswersList'
 
-const ActiveQuiz = props => {
-
+const ActiveQuiz = (props) => {
+  console.log(props)
   return (
     <div className={classes.ActiveQuiz}>
       <p className={classes.Question}>
-      <span>
-        <strong>{props.answerNumber}.</strong>&nbsp;
-        {props.question}
-      </span>
+        <span>
+          <strong>{props.answerNumber}.</strong>&nbsp;
+          {props.question}
+        </span>
 
-        <small>{props.answerNumber} из { props.quizLenght }</small>
+        <small>
+          {props.answerNumber} из {props.quizLength}
+        </small>
       </p>
 
       <AnswerList
