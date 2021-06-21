@@ -21,7 +21,7 @@ export function fetchQuizes() {
       Object.keys(response.data).forEach((key) => {
         quizes.push({
           id: key,
-          name: ` № ${response.data[key][0].question}`,
+          name: `  ${response.data[key][0].question}`,
         })
       })
 
